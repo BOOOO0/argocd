@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: simulation
+  namespace: rollout-test
   name: nginx-service
   labels:
     app: nginx

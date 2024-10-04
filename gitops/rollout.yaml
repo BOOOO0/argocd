@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  namespace: simulation
+  namespace: rollout-test
   name: nginx-rollout
   labels:
     app: nginx
