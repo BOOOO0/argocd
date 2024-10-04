@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  namespace: simulation
+  name: nginx-rollout
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20    # 첫 번째 단계: 20% 트래픽 할당
+      - pause: {duration: 1m}  # 1분 동안 일시 중지하여 모니터링
+      - setWeight: 50    # 두 번째 단계: 50% 트래픽 할당
+      - pause: {duration: 2m}  # 2분 동안 일시 중지하여 모니터링
+      - setWeight: 100   # 마지막 단계: 모든 트래픽을 새 버전으로 전환
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.19.10  # NGINX 이미지 사용
+        ports:
+        - containerPort: 80   # NGINX 기본 HTTP 포트
+
