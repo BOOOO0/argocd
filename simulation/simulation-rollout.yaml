@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollout-dp-1
+  namespace: rollout-simulation
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rollout-dp-1
+  template:
+    metadata:
+      labels:
+        app: rollout-dp-1
+    spec:
+      initContainers:
+        - name: init-sleep
+          image: busybox
+          command: ["sh", "-c", "sleep 5"]
+      containers:
+        - name: rollout-dp-1
+          image: 935103045726.dkr.ecr.ap-northeast-1.amazonaws.com/simulation-node-server:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3100"
+          ports:
+            - containerPort: 3100
+          resources:
+            limits:
+              cpu: "250m"
+              memory: "1Gi"
+            requests:
+              cpu: "250m"
+              memory: "1Gi"
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause: {duration: 10s}
+        - setWeight: 50
+        - pause: {duration: 10s}
+        - setWeight: 100
+
